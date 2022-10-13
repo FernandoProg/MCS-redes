@@ -1,3 +1,4 @@
+from optparse import Values
 import numpy as np
 
 matrix_incid = np.genfromtxt('./dataset/matrix_incid_5_7.csv', delimiter=',') # Importacion de la matriz de incidencia
@@ -35,6 +36,23 @@ def matrix_incid_to_matrix_connect():
         matrix_connect[pos[0][0]][pos[0][1]] = i + 1
         matrix_connect[pos[0][1]][pos[0][0]] = i + 1
     return matrix_connect
+
+def firstCombination():
+    firstRow = ""
+    LastRow = ""
+    values = []
+    for i in range(0, len(matrix_connect)):
+        if matrix_connect[0][i] != 0:
+            firstRow += str(int(matrix_connect[0][i]))
+        if matrix_connect[-1][i] != 0:
+            LastRow += str(int(matrix_connect[-1][i]))
+    if firstRow != LastRow:
+        values.append(firstRow)
+        values.append(LastRow)
+    else:
+        values.append(firstRow)
+    values = np.array(values)
+    return values
 
 def isCombination(element):
     sumFirstRow = 0
@@ -101,6 +119,8 @@ while 1:                        # Inicio del bucle
 
 matrix_connect = matrix_incid_to_matrix_connect()
 print(matrix_connect)
+myList = firstCombination()
+print(myList)
 for i in range(1, len(matrix_connect)-2):
     myList = combinations(i)
 print(myList)
