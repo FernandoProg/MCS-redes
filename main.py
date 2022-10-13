@@ -40,15 +40,22 @@ def matrix_incid_to_matrix_connect():
 
 def combinations(paso):
     num_rows, num_cols = matrix_connect.shape
-    numbers = np.arange(2,num_rows)
-    for i in range(2, num_rows):
-        for j in range(paso):
-            number = i
-            for k in range(i, num_rows):
-            
-                
-    print(numbers)
-    return None
+    values = []
+    for i in range(2, num_rows + 1):
+        number = ""
+        if paso > 1:
+            for j in range(i, num_rows + 1):
+                if len(number) < paso:
+                    number += str(j)
+                else:
+                    values.append(number)
+                    number = number.rstrip(number[-1])
+                    number += str(j)
+    if paso > 1:
+        values = np.array(values)
+    else:
+        values = np.arange(2, len(matrix_connect))
+    return values
 
 while 1:                        # Inicio del bucle
     isParallel = parallel()     # Consultamos si hay enlaces en paralelo
@@ -72,7 +79,7 @@ print("Matriz de incidencia: ", matrix_incid)     # Mostramos la matriz de incid
 print("Vector de confiabilidad: ", vector_conf)  # Mostramos el vector de confiabilidad resultante
 
 matrix_connect = matrix_incid_to_matrix_connect()
-paso = 1
+paso = 3
 initial_node = '0'
 end_node = '4'
 actualList = combinations(paso)
