@@ -31,11 +31,9 @@ def matrix_incid_to_matrix_connect():
     num_rows, num_cols = matrix_incid.shape
     matrix_connect = np.zeros((num_rows, num_rows))
     for i in range(num_cols):
-        # print(matrix_incid[:, i])
-        # print(np.where(matrix_incid[:, i] == 1))
         pos = np.where(matrix_incid[:, i] == 1)
-        matrix_connect[pos[0][0]][pos[0][1]] = 1
-        matrix_connect[pos[0][1]][pos[0][0]] = 1
+        matrix_connect[pos[0][0]][pos[0][1]] = i + 1
+        matrix_connect[pos[0][1]][pos[0][0]] = i + 1
     return matrix_connect
 
 def isCombination(element):
@@ -53,6 +51,16 @@ def isCombination(element):
     else:
         return True
 
+def toCombination(element):
+    newElement = ""
+    element = "0" + element
+    for i in range(len(matrix_connect)):
+        if str(i) in element:
+            for j in range(len(matrix_connect)):
+                if str(j) not in element and matrix_connect[i][j] != 0: 
+                    newElement += str(int(matrix_connect[i][j]))
+    return newElement
+
 def combinations(paso):
     values = []
     for i in range(1, len(matrix_connect)-1):
@@ -63,7 +71,7 @@ def combinations(paso):
                     number += str(j)
                 else:
                     if isCombination(number):
-                        values.append(number)
+                        values.append(toCombination(number))
                     number = number.rstrip(number[-1])
                     number += str(j)
         else:
@@ -92,8 +100,7 @@ while 1:                        # Inicio del bucle
         break
 
 matrix_connect = matrix_incid_to_matrix_connect()
-end_node = '4'
 print(matrix_connect)
 for i in range(1, len(matrix_connect)-2):
-    actualList = combinations(i)
-    print(actualList)
+    myList = combinations(i)
+print(myList)
