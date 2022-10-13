@@ -38,23 +38,39 @@ def matrix_incid_to_matrix_connect():
         matrix_connect[pos[0][1]][pos[0][0]] = 1
     return matrix_connect
 
+def isCombination(element):
+    sumFirstRow = 0
+    if len(element) > 1:
+        sumLastColumn = False
+    else:
+        sumLastColumn = True
+    for i in range(len(element)):
+        sumFirstRow += matrix_connect[0][int(element[i])]
+        if matrix_connect[int(element[i])][-1] == 0:
+            sumLastColumn = True
+    if sumFirstRow == 0 or not sumLastColumn:
+        return False
+    else:
+        return True
+
 def combinations(paso):
-    num_rows, num_cols = matrix_connect.shape
     values = []
-    for i in range(2, num_rows + 1):
+    for i in range(1, len(matrix_connect)-1):
         number = ""
         if paso > 1:
-            for j in range(i, num_rows + 1):
+            for j in range(i, len(matrix_connect)):
                 if len(number) < paso:
                     number += str(j)
                 else:
-                    values.append(number)
+                    if isCombination(number):
+                        values.append(number)
                     number = number.rstrip(number[-1])
                     number += str(j)
-    if paso > 1:
-        values = np.array(values)
-    else:
-        values = np.arange(2, len(matrix_connect))
+        else:
+            number += str(i)
+            if isCombination(number):
+                values.append(number)
+    values = np.array(values)
     return values
 
 while 1:                        # Inicio del bucle
@@ -75,12 +91,9 @@ while 1:                        # Inicio del bucle
     else:                       # De no haberse encontrado enlaces en serie ni en paralelo, el bucle se termina
         break
 
-print("Matriz de incidencia: ", matrix_incid)     # Mostramos la matriz de incidencia resultante
-print("Vector de confiabilidad: ", vector_conf)  # Mostramos el vector de confiabilidad resultante
-
 matrix_connect = matrix_incid_to_matrix_connect()
-paso = 3
-initial_node = '0'
 end_node = '4'
-actualList = combinations(paso)
-print(actualList)
+print(matrix_connect)
+for i in range(1, len(matrix_connect)-2):
+    actualList = combinations(i)
+    print(actualList)
