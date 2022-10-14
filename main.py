@@ -1,9 +1,7 @@
-from hashlib import algorithms_available
-from optparse import Values
 import numpy as np
 
-matrix_incid = np.genfromtxt('./dataset/matrix_incid_5_8.csv', delimiter=',') # Importacion de la matriz de incidencia
-vector_conf = np.genfromtxt('./dataset/vector_conf_5_8.csv', delimiter=',')   # Importacion del vector de confiabilidad
+matrix_incid = np.genfromtxt('./dataset/matrix_incid_5_7.csv', delimiter=',') # Importacion de la matriz de incidencia
+vector_conf = np.genfromtxt('./dataset/vector_conf_5_7.csv', delimiter=',')   # Importacion del vector de confiabilidad
 
 def parallel():                             # Funcion para ver nodos paralelos
     num_rows, num_cols = matrix_incid.shape # Se almacena el numero de filas y columnas respectivamente
@@ -102,38 +100,40 @@ def combinations(paso):
 
 def inclusionexclusion(sets):
     sum = 0
-    for i in sets:
-        mult = 1
-        for j in range(len(i)):
-            mult *= (1-vector_conf[int(i[j])-1])
-        sum += mult
     for i in range(1, len(sets)):
         newSet = combinateSets(sets, i)
+        # print(newSet)
         for j in newSet:
             mult = 1
             for k in range(len(j)):
                 mult *= (1-vector_conf[int(j[k])-1])
             if i % 2 == 0:
-                sum += mult
-            else:
                 sum -= mult
+            else:
+                sum += mult
     return 1 - sum
 
 def combinateSets(sets, paso):
-    newSets = []
-    for i in range(len(sets)):
-        value = ""
+    flag = False
+    for i in range(len(sets) + 1):
+        if flag:
+            i -= 1
+        flag = False
+        number = ""
+        values = []
         for j in range(i, len(sets)):
-            if j-i < paso:
-                value += str(sets[j])
+            if len(number) < paso:
+                number += str(j)
             else:
-                value += str(sets[j])
-                newSets.append(value)
-                value = value[0:-len(sets[j])]
-    for i in range(len(newSets)):
-        newSets[i] = ''.join(set(newSets[i]))
-    newSets = np.array(newSets)
-    return newSets
+                comb = ""
+                print(number)
+                for k in range(len(number)):
+                    comb += sets[int(number[k])]
+                values.append(''.join(set(comb)))
+                number = number.rstrip(number[-1])
+                flag = True
+                number += str(j)
+        return values
 
 while 1:                        # Inicio del bucle
     isParallel = parallel()     # Consultamos si hay enlaces en paralelo
@@ -159,5 +159,6 @@ print(vector_conf)
 myList = firstCombination()
 for i in range(1, len(matrix_connect)-2):
     myList = np.append(myList, combinations(i))
+print("MCS: ", myList)
 ans = inclusionexclusion(myList)
 print(ans)
