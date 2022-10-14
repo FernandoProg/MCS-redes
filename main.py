@@ -1,3 +1,4 @@
+from hashlib import algorithms_available
 from optparse import Values
 import numpy as np
 
@@ -99,6 +100,41 @@ def combinations(paso):
     values = np.array(values)
     return values
 
+def inclusionexclusion(sets):
+    sum = 0
+    for i in sets:
+        mult = 1
+        for j in range(len(i)):
+            mult *= vector_conf[int(i[j])-1]
+        sum += mult
+    for i in range(1, len(sets)):
+        newSet = combinateSets(sets, i)
+        for j in newSet:
+            mult = 1
+            for k in range(len(j)):
+                mult *= vector_conf[int(j[k])-1]
+            if i % 2 == 0:
+                sum += mult
+            else:
+                sum -= mult
+    return sum
+
+def combinateSets(sets, paso):
+    newSets = []
+    for i in range(len(sets)):
+        value = ""
+        for j in range(i, len(sets)):
+            if j-i < paso:
+                value += str(sets[j])
+            else:
+                value += str(sets[j])
+                newSets.append(value)
+                value = value[0:-len(sets[j])]
+    for i in range(len(newSets)):
+        newSets[i] = ''.join(set(newSets[i]))
+    newSets = np.array(newSets)
+    return newSets
+
 while 1:                        # Inicio del bucle
     isParallel = parallel()     # Consultamos si hay enlaces en paralelo
     isSerie = serie()           # Consultamos si hay enlaces en serie
@@ -118,8 +154,9 @@ while 1:                        # Inicio del bucle
         break
 
 matrix_connect = matrix_incid_to_matrix_connect()
-print(matrix_connect)
+print(vector_conf)
 myList = firstCombination()
 for i in range(1, len(matrix_connect)-2):
     myList = np.append(myList, combinations(i))
-print(myList)
+ans = inclusionexclusion(myList)
+print(ans)
