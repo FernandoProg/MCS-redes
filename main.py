@@ -95,7 +95,7 @@ def combinations(paso):
         else:
             number += str(i)
             if isCombination(number):
-                values.append(number)
+                values.append(toCombination(number))
     values = np.array(values)
     return values
 
@@ -120,7 +120,6 @@ while 1:                        # Inicio del bucle
 matrix_connect = matrix_incid_to_matrix_connect()
 print(matrix_connect)
 myList = firstCombination()
-print(myList)
 for i in range(1, len(matrix_connect)-2):
-    myList = combinations(i)
+    myList = np.append(myList, combinations(i))
 print(myList)
