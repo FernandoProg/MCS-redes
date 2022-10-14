@@ -2,8 +2,8 @@ from hashlib import algorithms_available
 from optparse import Values
 import numpy as np
 
-matrix_incid = np.genfromtxt('./dataset/matrix_incid_5_7.csv', delimiter=',') # Importacion de la matriz de incidencia
-vector_conf = np.genfromtxt('./dataset/vector_conf_5_7.csv', delimiter=',')   # Importacion del vector de confiabilidad
+matrix_incid = np.genfromtxt('./dataset/matrix_incid_5_8.csv', delimiter=',') # Importacion de la matriz de incidencia
+vector_conf = np.genfromtxt('./dataset/vector_conf_5_8.csv', delimiter=',')   # Importacion del vector de confiabilidad
 
 def parallel():                             # Funcion para ver nodos paralelos
     num_rows, num_cols = matrix_incid.shape # Se almacena el numero de filas y columnas respectivamente
@@ -105,19 +105,19 @@ def inclusionexclusion(sets):
     for i in sets:
         mult = 1
         for j in range(len(i)):
-            mult *= vector_conf[int(i[j])-1]
+            mult *= (1-vector_conf[int(i[j])-1])
         sum += mult
     for i in range(1, len(sets)):
         newSet = combinateSets(sets, i)
         for j in newSet:
             mult = 1
             for k in range(len(j)):
-                mult *= vector_conf[int(j[k])-1]
+                mult *= (1-vector_conf[int(j[k])-1])
             if i % 2 == 0:
                 sum += mult
             else:
                 sum -= mult
-    return sum
+    return 1 - sum
 
 def combinateSets(sets, paso):
     newSets = []
@@ -154,6 +154,7 @@ while 1:                        # Inicio del bucle
         break
 
 matrix_connect = matrix_incid_to_matrix_connect()
+print(matrix_connect)
 print(vector_conf)
 myList = firstCombination()
 for i in range(1, len(matrix_connect)-2):
