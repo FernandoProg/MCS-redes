@@ -1,4 +1,5 @@
 import numpy as np
+import itertools as it
 
 matrix_incid = np.genfromtxt('./dataset/matrix_incid_5_7.csv', delimiter=',') # Importacion de la matriz de incidencia
 vector_conf = np.genfromtxt('./dataset/vector_conf_5_7.csv', delimiter=',')   # Importacion del vector de confiabilidad
@@ -50,7 +51,6 @@ def firstCombination():
         values.append(LastRow)
     else:
         values.append(firstRow)
-    values = np.array(values)
     return values
 
 def isCombination(element):
@@ -69,71 +69,49 @@ def isCombination(element):
         return True
 
 def toCombination(element):
-    newElement = ""
-    element = "0" + element
+    newElement = "0"
+    MyElement = ""
+    for k in element:
+        newElement = newElement + str(k)
     for i in range(len(matrix_connect)):
-        if str(i) in element:
+        if str(i) in newElement:
             for j in range(len(matrix_connect)):
-                if str(j) not in element and matrix_connect[i][j] != 0: 
-                    newElement += str(int(matrix_connect[i][j]))
-    return newElement
+                if str(j) not in newElement and matrix_connect[i][j] != 0: 
+                    MyElement += str(int(matrix_connect[i][j]))
+    return MyElement
 
-def combinations(paso):
-    values = []
-    for i in range(1, len(matrix_connect)-1):
-        number = ""
-        if paso > 1:
-            for j in range(i, len(matrix_connect)):
-                if len(number) < paso:
-                    number += str(j)
-                else:
-                    if isCombination(number):
-                        values.append(toCombination(number))
-                    number = number.rstrip(number[-1])
-                    number += str(j)
-        else:
-            number += str(i)
-            if isCombination(number):
-                values.append(toCombination(number))
-    values = np.array(values)
-    return values
+def combinations():
+    values = np.arange(1, len(matrix_connect)-1)
+    val = []
+    list_combinations = list()
+    for i in range(len(values) + 1):
+        list_combinations += list(it.combinations(values, i))
+    for i in list_combinations:
+        if isCombination(i):
+            val.append(toCombination(i))
+    return val
 
 def inclusionexclusion(sets):
     sum = 0
-    for i in range(1, len(sets)):
-        newSet = combinateSets(sets, i)
-        # print(newSet)
-        for j in newSet:
-            mult = 1
-            for k in range(len(j)):
-                mult *= (1-vector_conf[int(j[k])-1])
-            if i % 2 == 0:
-                sum -= mult
-            else:
-                sum += mult
+    i = 0
+    list_combinations = list()
+    for i in range(len(sets)+1):
+        list_combinations = list(it.combinations(sets, i))
+        for j in list_combinations:
+            if len(j) > 0:
+                value = ""
+                for k in j:
+                    for l in k:
+                        value += str(l)
+                    value = ''.join(set(value))
+                mult = 1
+                for k in range(len(value)):
+                    mult *= (1-vector_conf[int(value[k])-1])
+                if i % 2 == 0:
+                    sum -= mult
+                else:
+                    sum += mult
     return 1 - sum
-
-def combinateSets(sets, paso):
-    flag = False
-    for i in range(len(sets) + 1):
-        if flag:
-            i -= 1
-        flag = False
-        number = ""
-        values = []
-        for j in range(i, len(sets)):
-            if len(number) < paso:
-                number += str(j)
-            else:
-                comb = ""
-                print(number)
-                for k in range(len(number)):
-                    comb += sets[int(number[k])]
-                values.append(''.join(set(comb)))
-                number = number.rstrip(number[-1])
-                flag = True
-                number += str(j)
-        return values
 
 while 1:                        # Inicio del bucle
     isParallel = parallel()     # Consultamos si hay enlaces en paralelo
@@ -154,11 +132,9 @@ while 1:                        # Inicio del bucle
         break
 
 matrix_connect = matrix_incid_to_matrix_connect()
-print(matrix_connect)
-print(vector_conf)
-myList = firstCombination()
-for i in range(1, len(matrix_connect)-2):
-    myList = np.append(myList, combinations(i))
+myList = combinations()
+for i in firstCombination():
+    if i not in myList:
+        myList.append(i)
 print("MCS: ", myList)
-ans = inclusionexclusion(myList)
-print(ans)
+print("Confiabilidad: ", inclusionexclusion(myList))
