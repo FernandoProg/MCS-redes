@@ -1,8 +1,8 @@
 import numpy as np
 import itertools as it
 
-matrix_incid = np.genfromtxt('./dataset/matrix_incid_5_7.csv', delimiter=',') # Importacion de la matriz de incidencia
-vector_conf = np.genfromtxt('./dataset/vector_conf_5_7.csv', delimiter=',')   # Importacion del vector de confiabilidad
+matrix_incid = np.genfromtxt('./dataset/matrix_incid_6_9.csv', delimiter=',') # Importacion de la matriz de incidencia
+vector_conf = np.genfromtxt('./dataset/vector_conf_6_9.csv', delimiter=',')   # Importacion del vector de confiabilidad
 
 def parallel():                             # Funcion para ver nodos paralelos
     num_rows, num_cols = matrix_incid.shape # Se almacena el numero de filas y columnas respectivamente
@@ -111,6 +111,14 @@ def inclusionexclusion(sets):
                     sum -= mult
                 else:
                     sum += mult
+        if i == 1:
+            print("Primera cota inferior: ", 1 - sum)
+        elif i == 2:
+            print("Primera cota superior: ", 1 - sum)
+        elif i == 3:
+            print("Segunda cota inferior: ", 1 - sum)
+        elif i == 4:
+            print("Segunda cota superior: ", 1 - sum)
     return 1 - sum
 
 while 1:                        # Inicio del bucle
@@ -132,6 +140,7 @@ while 1:                        # Inicio del bucle
         break
 
 matrix_connect = matrix_incid_to_matrix_connect()
+print(matrix_connect)
 myList = combinations()
 for i in firstCombination():
     if i not in myList:
